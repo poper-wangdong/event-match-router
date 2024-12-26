@@ -1,0 +1,36 @@
+queues:
+  - name: 'kafka'
+    class: 'KafkaQueue'
+
+# 过滤器规则
+filters:
+  # 使用 class 过滤器处理
+  - name: 'user_password'
+    class: 'UserPasswordFilter'
+
+  # 直接过滤某个表的特定字段
+  - name: 'user_name'
+    db: 'users'
+    fields:
+      - 'name'
+      - 'email'
+      - 'password'
+
+# 用于匹配的数据
+matchers:
+  - name: 'user_reg' # 用户注册事件
+    table: 'users' # 指定关注的表
+    event: # 指定关注的事件
+      - 'insert'
+    to: # 指定发送到的队列 可以是多个
+      - 'kafka'
+
+  - name: 'user_reset_password' # 用户修改密码
+    table: 'users' # 指定关注的表
+    event: # 指定关注的事件
+      - 'update'
+    fields: # 指定关注的字段
+      - 'password'
+    to: # 指定发送到的队列 可以是多个
+      - 'kafka'
+
